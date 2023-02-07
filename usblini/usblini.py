@@ -102,7 +102,7 @@ class USBlini(object):
         :param serialnumber: USB serial number
         :type serialnumber: string       
         """
-        self.ctx = usb1.LibUSBContext()
+        self.ctx = usb1.USBContext()
 
         for device in self.ctx.getDeviceIterator():
             if device.getVendorID() == self.USB_VID and device.getProductID() == self.USB_PID:
