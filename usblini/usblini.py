@@ -66,12 +66,12 @@ class USBlini(object):
 
         self.ctx.open()
 
-        self.usbdev = self.get_usb_device(serialnumber)
+        self.usbdev = self.get_usb_device(self.ctx, serialnumber)
         if self.usbdev is None:
             raise USBliniNotFoundError()
 
         self.usbhandle = self.usbdev.open()
-        self.usbhandle.claimInterface(0)        
+        self.usbhandle.claimInterface(0)
 
         self.receiveevent = threading.Event()
 
@@ -81,11 +81,11 @@ class USBlini(object):
         t1.setInterrupt(0x81, 64, th1)
         t1.submit()
 
-        th2 = usb1.USBTransferHelper()
-        th2.setEventCallback(usb1.TRANSFER_COMPLETED, self.usbtransfer_ep2_callback)
-        t2 = self.usbhandle.getTransfer()
-        t2.setInterrupt(0x82, 64, th2)
-        t2.submit()
+        # th2 = usb1.USBTransferHelper()
+        # th2.setEventCallback(usb1.TRANSFER_COMPLETED, self.usbtransfer_ep2_callback)
+        # t2 = self.usbhandle.getTransfer()
+        # t2.setInterrupt(0x82, 64, th2)
+        # t2.submit()
 
         self.eventthread = USBliniUSBEventHandler(self)
         self.eventthread.start()
@@ -99,14 +99,14 @@ class USBlini(object):
         self.usbdev.close()
         self.ctx.close()
 
-    def get_usb_device(self, serialnumber = None):
+    def get_usb_device(self, context, serialnumber = None):
         """
         Get USB device matching VID and PID and if given also check the USB serial number.
         :rtype: USBDeviceHandle
         :param serialnumber: USB serial number
         :type serialnumber: string       
         """
-        for device in self.ctx.getDeviceIterator():
+        for device in context.getDeviceIterator():
             if device.getVendorID() == self.USB_VID and device.getProductID() == self.USB_PID:
                 
                 if serialnumber is None:
